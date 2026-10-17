@@ -310,3 +310,95 @@ TEST(TBitField, bitfields_with_different_bits_are_not_equal)
 
     EXPECT_NE(bf1, bf2);
 }
+// Собственные тесты
+TEST(Simple, sum_of_first_five_odd_numbers_is_five_squared)
+{
+    EXPECT_EQ(5 * 5, 1 + 3 + 5 + 7 + 9);
+}
+
+TEST(Simple, sum_of_first_six_odd_numbers_is_six_squared)
+{
+    EXPECT_EQ(6 * 6, 1 + 3 + 5 + 7 + 9 + 11);
+}
+
+TEST(TBitField, double_clear_bit_leaves_it_zero)
+{
+    TBitField bf(10);
+
+    bf.SetBit(4);
+    bf.ClrBit(4);
+    bf.ClrBit(4);
+
+    EXPECT_EQ(0, bf.GetBit(4));
+}
+
+TEST(TBitField, double_set_bit_leaves_it_set)
+{
+    TBitField bf(10);
+
+    bf.SetBit(4);
+    bf.SetBit(4);
+
+    EXPECT_NE(0, bf.GetBit(4));
+}
+
+TEST(TBitField, can_or_three_bitfields_in_one_expression)
+{
+    const int size = 40;
+    TBitField bf1(size), bf2(size), bf3(size), expBf(size);
+    bf1.SetBit(0);
+    bf2.SetBit(17);
+    bf3.SetBit(39);
+
+    expBf.SetBit(0);
+    expBf.SetBit(17);
+    expBf.SetBit(39);
+
+    EXPECT_EQ(expBf, bf1 | bf2 | bf3);
+}
+
+TEST(TBitField, can_and_three_bitfields_in_one_expression)
+{
+    const int size = 40;
+    TBitField bf1(size), bf2(size), bf3(size), expBf(size);
+    // общий для всех трёх бит - только 33
+    bf1.SetBit(5);
+    bf1.SetBit(33);
+    bf2.SetBit(33);
+    bf2.SetBit(7);
+    bf3.SetBit(33);
+    bf3.SetBit(5);
+
+    expBf.SetBit(33);
+
+    EXPECT_EQ(expBf, bf1 & bf2 & bf3);
+}
+
+TEST(TBitField, copied_bitfield_is_independent_of_original)
+{
+    TBitField bf1(10);
+    bf1.SetBit(2);
+    TBitField bf2(bf1);
+
+    bf2.SetBit(5);
+
+    EXPECT_EQ(0, bf1.GetBit(5));
+    EXPECT_NE(0, bf2.GetBit(2));
+}
+
+TEST(TBitField, bitfields_of_different_length_are_not_equal)
+{
+    TBitField bf1(4), bf2(5);
+
+    EXPECT_NE(bf1, bf2);
+}
+
+TEST(TBitField, can_set_last_bit_of_bitfield_with_length_multiple_of_word)
+{
+    const int size = 64;
+    TBitField bf(size);
+
+    bf.SetBit(size - 1);
+
+    EXPECT_NE(0, bf.GetBit(size - 1));
+}
