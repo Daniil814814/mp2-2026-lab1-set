@@ -296,3 +296,103 @@ TEST(TSet, check_negation_operator)
 
 	EXPECT_EQ(expSet, set1);
 }
+// Собственные тесты
+TEST(TSet, can_combine_three_sets_in_one_expression)
+{
+	const int size = 8;
+	TSet set1(size), set2(size), set3(size), expSet(size);
+	set1.InsElem(0);
+	set2.InsElem(3);
+	set3.InsElem(7);
+
+	expSet.InsElem(0);
+	expSet.InsElem(3);
+	expSet.InsElem(7);
+
+	EXPECT_EQ(expSet, set1 + set2 + set3);
+}
+
+TEST(TSet, can_intersect_three_sets_in_one_expression)
+{
+	const int size = 8;
+	TSet set1(size), set2(size), set3(size), expSet(size);
+	set1.InsElem(1);
+	set1.InsElem(2);
+	set1.InsElem(5);
+	set2.InsElem(2);
+	set2.InsElem(5);
+	set2.InsElem(6);
+	set3.InsElem(5);
+	set3.InsElem(0);
+
+	expSet.InsElem(5);
+
+	EXPECT_EQ(expSet, set1 * set2 * set3);
+}
+
+TEST(TSet, can_delete_element_using_minus_operator)
+{
+	const int size = 5;
+	TSet set(size), updatedSet(size);
+	set.InsElem(1);
+	set.InsElem(3);
+	updatedSet = set - 3;
+
+	EXPECT_EQ(0, updatedSet.IsMember(3));
+	EXPECT_NE(0, updatedSet.IsMember(1));
+}
+
+TEST(TSet, throws_when_delete_element_out_of_range_using_minus_operator)
+{
+	const int size = 4;
+	TSet set(size);
+
+	ASSERT_ANY_THROW(set - 6);
+}
+
+TEST(TSet, can_chain_plus_element_operators)
+{
+	const int size = 6;
+	TSet set(size), expSet(size);
+	expSet.InsElem(1);
+	expSet.InsElem(2);
+	expSet.InsElem(4);
+
+	EXPECT_EQ(expSet, set + 1 + 2 + 4);
+}
+
+TEST(TSet, double_negation_returns_original_set)
+{
+	const int size = 10;
+	TSet set(size);
+	set.InsElem(0);
+	set.InsElem(4);
+	set.InsElem(9);
+
+	EXPECT_EQ(set, ~~set);
+}
+
+TEST(TSet, set_and_its_complement_union_is_full_universe)
+{
+	const int size = 10;
+	TSet set(size), full(size);
+	set.InsElem(2);
+	set.InsElem(7);
+	for (int i = 0; i < size; i++)
+		full.InsElem(i);
+
+	EXPECT_EQ(full, set + ~set);
+}
+
+TEST(TSet, can_convert_set_to_bitfield_and_back)
+{
+	const int size = 12;
+	TSet set(size);
+	set.InsElem(3);
+	set.InsElem(11);
+
+	TBitField bf = set;
+	TSet restored(bf);
+
+	EXPECT_EQ(set, restored);
+}
