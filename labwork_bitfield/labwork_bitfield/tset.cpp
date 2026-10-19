@@ -75,6 +75,8 @@ TSet TSet::operator+(const TSet& s) // объединение
 
 TSet TSet::operator+(const int Elem) // объединение с элементом
 {
+    if (Elem < 0 || Elem >= MaxPower)
+        throw std::out_of_range("TSet::operator+: element out of range");
     TSet res(*this);
     res.InsElem(Elem);
     return res;
@@ -82,7 +84,8 @@ TSet TSet::operator+(const int Elem) // объединение с элемент
 
 TSet TSet::operator-(const int Elem) // разность с элементом
 {
-   
+    if (Elem < 0 || Elem >= MaxPower)
+        throw std::out_of_range("TSet::operator-: element out of range");
     TSet res(*this);
     res.DelElem(Elem); 
     return res;
@@ -104,22 +107,13 @@ TSet TSet::operator~(void) // дополнение
 
 istream& operator>>(istream& istr, TSet& s) // ввод
 {
-    int elem;
-    while ((istr >> elem) && elem >= 0 && elem < s.MaxPower)
-        s.InsElem(elem);
+    istr >> s.BitField;
+    s.MaxPower = s.BitField.GetLength();
     return istr;
 }
 
 ostream& operator<<(ostream& ostr, const TSet& s) // вывод
 {
-    ostr << "{";
-    bool first = true;
-    for (int i = 0; i < s.MaxPower; i++)
-        if (s.IsMember(i))
-        {
-            ostr << (first ? " " : ", ") << i;
-            first = false;
-        }
-    ostr << " }";
+    ostr << s.BitField;
     return ostr;
 }
